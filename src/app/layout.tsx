@@ -24,7 +24,7 @@ export default function RootLayout({
             <nav className="bg-white shadow-sm">
               <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center py-4">
-                  <Link href="/dashboard" className="text-lg font-semibold">
+                  <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
                     Stripe Dashboard
                   </Link>
                   <div className="space-x-4">
@@ -38,9 +38,7 @@ export default function RootLayout({
                 </div>
               </div>
             </nav>
-            <main>
-              {children}
-            </main>
+            <main>{children}</main>
           </div>
         </StripeProvider>
       </body>
