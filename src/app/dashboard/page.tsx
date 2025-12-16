@@ -6,21 +6,19 @@ import { useStripeApiKey } from "@/contexts/StripeContext";
 import RevenueCalendar from "@/components/RevenueCalendar";
 import ChurnCard from "@/components/ChurnCard";
 import { getProjectedRevenue, getChurnMetrics } from "@/lib/stripe/actions";
-
-type RevenueData = { [key: string]: number };
-
-type ChurnData = {
-  cancelingUsersCount: number;
-  mrrAtRisk: number;
-  churnsByDate: { [key: string]: number };
-};
+import { TrendingUp } from "lucide-react";
+import { ChurnData, RevenueData } from "@/lib/stripe/types";
+import MrrCard from "@/components/MrrCard";
 
 export default function DashboardPage() {
   const { apiKey, isLoading } = useStripeApiKey();
   const router = useRouter();
   const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
+  const [uniqueUsersCount, setUniqueUsersCount] = useState<number | null>(null);
   const [mrrData, setMrrData] = useState<number | null>(null);
   const [churnData, setChurnData] = useState<ChurnData | null>(null);
+  const [planBreakdown, setPlanBreakdown] = useState<{ [key: string]: number } | null>(null);
+  const [planBreakdownAtRisk, setPlanBreakdownAtRisk] = useState<{ [key: string]: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,12 +33,14 @@ export default function DashboardPage() {
         try {
           const revenueResult = await getProjectedRevenue(apiKey);
           if (revenueResult.success) {
-            setRevenueData(revenueResult.data);
+            setRevenueData(revenueResult);
             if (revenueResult.data === null) {
               setError("No revenue data available.");
               return;
             }
             setMrrData(revenueResult.totalMRR);
+            setUniqueUsersCount(revenueResult.uniqueUsersCount);
+            setPlanBreakdown(revenueResult.planBreakdown);
           } else {
             setError(revenueResult.error || "Failed to fetch revenue data.");
           }
@@ -64,26 +64,44 @@ export default function DashboardPage() {
   }, [apiKey]);
 
   if (isLoading || !apiKey) {
-    return <div>Loading...</div>;
+    return <div className="flex h-[50vh] items-center justify-center text-[var(--muted)]">Loading dashboard...</div>;
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">Dashboard</h1>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="md:col-span-2">
-          {revenueData ? <RevenueCalendar data={revenueData} churnData={churnData?.churnsByDate || {}} /> : <p>Loading revenue data...</p>}
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">Financial Overview</h1>
+        {/* Date Picker could go here */}
+      </div>
+
+      {error && (
+        <div className="p-4 rounded-lg bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/20 text-sm">
+          {error}
         </div>
-        {/* Current MRR minus expected churn */}
-        <div className="md:col-span-1">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-4 text-gray-500">MRR</h2>
-            <p className="text-2xl font-bold text-green-500">${mrrData?.toFixed(2) ?? "Loading..."}</p>
-          </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Metric Cards Row */}
+        <div className="col-span-1">
+          {mrrData ? <MrrCard data={revenueData!} /> : <div className="h-64 bg-[var(--surface)] rounded-xl animate-pulse" />}
         </div>
-        {/* Users set to cancel */}
-        <div className="md:col-span-1">{churnData ? <ChurnCard data={churnData} /> : <p>Loading churn data...</p>}</div>
+
+        <div className="col-span-1">
+          {churnData ? <ChurnCard data={churnData!} /> : <div className="h-64 bg-[var(--surface)] rounded-xl animate-pulse" />}
+        </div>
+
+        {/* Placeholder for future metric (LTV or similar) to complete row, or just empty space/info */}
+        <div className="col-span-1 hidden lg:block bg-[var(--surface)]/50 border border-[var(--border)] border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center">
+          <p className="text-[var(--muted)] text-sm font-medium">LTV / CAC Calculation</p>
+          <p className="text-[var(--muted)] text-xs mt-1">Coming Soon</p>
+        </div>
+
+        {/* Calendar spans full width */}
+        {churnData ? (
+          <RevenueCalendar data={revenueData?.data || {}} churnData={churnData?.churnsByDate || {}} />
+        ) : (
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 h-96 bg-[var(--surface)] rounded-xl animate-pulse" />
+        )}
       </div>
     </div>
   );

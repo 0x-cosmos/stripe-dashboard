@@ -1,29 +1,79 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-border: var(--border);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Cool Gray 50 */
+  --background: #F7F9FC;
+  /* White */
+  --surface: #FFFFFF;
+  /* Gray 800 */
+  --foreground: #1F2937;
+  /* Slate 500 */
+  --muted: #64748B;
+  /* Stripe Blurple */
+  --primary: #635BFF;
+  /* Emerald 600 */
+  --success: #059669;
+  /* Red 600 */
+  --danger: #DC2626;
+  /* Slate 200 */
+  --border: #E2E8F0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-
-    /* Font */
-    --font-sans: "Inter", sans-serif;
-    --font-mono: "Fira Code", monospace;
-
-    /* Colors */
-    --color-primary: #3b82f6;
-    --color-secondary: #10b981;
-    --color-accent: #f59e0b;
-    --color-background: #1f2937;
-    --color-foreground: #f3f4f6;
+    /* Deep Navy */
+    --background: #0A2540;
+    /* Lighter Navy */
+    --surface: #1A3D63;
+    /* Slate 50 */
+    --foreground: #E6EAF0;
+    /* Slate 400 */
+    --muted: #94A3B8;
+    /* Stripe Blurple */
+    --primary: #635BFF;
+    /* Green 400 */
+    --success: #4ADE80;
+    /* Red 400 */
+    --danger: #F87171;
+    /* White 10% */
+    --border: rgba(255, 255, 255, 0.1);
   }
 }
 
+/* Class-based dark mode override for manual toggle */
+.dark {
+  /* Deep Navy */
+  --background: #0A2540;
+  /* Lighter Navy */
+  --surface: #1A3D63;
+  /* Slate 50 */
+  --foreground: #E6EAF0;
+  /* Slate 400 */
+  --muted: #94A3B8;
+  /* Stripe Blurple */
+  --primary: #635BFF;
+  /* Green 400 */
+  --success: #4ADE80;
+  /* Red 400 */
+  --danger: #F87171;
+  /* White 10% */
+  --border: rgba(255, 255, 255, 0.1);
+}
+
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
+  font-family: "Inter", sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

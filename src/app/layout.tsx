@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { StripeProvider } from "@/contexts/StripeContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import DashboardShell from "@/components/DashboardShell";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -17,29 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <StripeProvider>
-          <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white shadow-sm">
-              <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center py-4">
-                  <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-                    Stripe Dashboard
-                  </Link>
-                  <div className="space-x-4">
-                    <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-                      Dashboard
-                    </Link>
-                    <Link href="/settings" className="text-gray-600 hover:text-gray-900">
-                      Settings
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </nav>
-            <main>{children}</main>
-          </div>
+          <ThemeProvider>
+            <DashboardShell>
+              {children}
+            </DashboardShell>
+          </ThemeProvider>
         </StripeProvider>
       </body>
     </html>
